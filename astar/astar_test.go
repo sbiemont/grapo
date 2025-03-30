@@ -2,7 +2,6 @@ package astar_test
 
 import (
 	"fmt"
-	"math"
 	"testing"
 
 	"github.com/sbiemont/grapo/astar"
@@ -94,7 +93,7 @@ func TestAStarOnMatrix(t *testing.T) {
 		})
 	})
 
-	Convey("when meidum weigths with shortcut", t, func() {
+	Convey("when medium weigths with shortcut", t, func() {
 		m := makeMatrix(4)
 		path := astar.Run(
 			start, // start node
@@ -105,11 +104,11 @@ func TestAStarOnMatrix(t *testing.T) {
 		)
 
 		// | . . . . . . |      | o o o o o   |
-		// | 3 3 3 3 3 . |      |           o |
+		// | 4 4 4 4 4 . |      |           o |
 		// | . . . . . . |  =>  |           o |
-		// | . 3 3 3 3 3 |      |           o |
+		// | . 4 4 4 4 4 |      |           o |
 		// | . . . . . . |      |           o |
-		// | 3 3 3 3 3 . |      |           o |
+		// | 4 4 4 4 4 . |      |           o |
 		So(path, ShouldResemble, []node{
 			{0, 0}, {0, 1}, {0, 2}, {0, 3}, {0, 4},
 			{1, 5},
@@ -120,7 +119,7 @@ func TestAStarOnMatrix(t *testing.T) {
 		})
 	})
 
-	Convey("when hight weigths without shortcut", t, func() {
+	Convey("when high weigths without shortcut", t, func() {
 		m := makeMatrix(9)
 		path := astar.Run(
 			start, // start node
@@ -159,9 +158,7 @@ func TestAStarOnNodeWithCoordinates(t *testing.T) {
 
 	// distance = √((x2-x1)²-(y2-y1)²)
 	distance := func(a, b *node) float64 {
-		x := b.x - a.x
-		y := b.y - a.y
-		return math.Sqrt(x*x + y*y)
+		return astar.EuclideanDistance(a.x, a.y, b.x, b.y)
 	}
 
 	weight := func(a *node) float64 {
