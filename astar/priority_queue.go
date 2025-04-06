@@ -4,34 +4,34 @@ package astar
 type priorityQueue []*node
 
 // Len returns the length of the priority queue
-func (pq priorityQueue) Len() int { return len(pq) }
+func (q priorityQueue) Len() int { return len(q) }
 
 // Less compares two items in the queue
-func (pq priorityQueue) Less(i, j int) bool {
-	return pq[i].f < pq[j].f
+func (q priorityQueue) Less(i, j int) bool {
+	return q[i].f < q[j].f
 }
 
 // Swap swaps two items in the priority queue
-func (pq priorityQueue) Swap(i, j int) {
-	pq[i], pq[j] = pq[j], pq[i]
-	pq[i].index = i
-	pq[j].index = j
+func (q priorityQueue) Swap(i, j int) {
+	q[i], q[j] = q[j], q[i]
+	q[i].index = i
+	q[j].index = j
 }
 
 // Push adds an item to the priority queue
-func (pq *priorityQueue) Push(x interface{}) {
+func (q *priorityQueue) Push(x any) {
 	item := x.(*node)
-	item.index = len(*pq)
-	*pq = append(*pq, item)
+	item.index = len(*q)
+	*q = append(*q, item)
 }
 
 // Pop removes and returns the item with the highest priority
-func (pq *priorityQueue) Pop() interface{} {
-	old := *pq
+func (q *priorityQueue) Pop() any {
+	old := *q
 	n := len(old)
 	item := old[n-1]
 	old[n-1] = nil  // avoid memory leak
 	item.index = -1 // for safety
-	*pq = old[0 : n-1]
+	*q = old[0 : n-1]
 	return item
 }

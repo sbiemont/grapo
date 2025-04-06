@@ -2,12 +2,13 @@
 
 `grapo` offers algorithms for graphs
 
-algo | description
----- | -----------
-`A*`  | A star algorithm to find the shortest path
-`BFS` | Breadth first search
-`DFS` | Depth-first search
-`IsCyclic` | Detects cycles in a graph
+algo              | description
+----------------- | -----------
+`A*`              | A star algorithm to find the shortest path
+`Dijkstra`        | Dijkstra algorithm to find the shortest path
+`BFS`             | Breadth-first search
+`DFS`             | Depth-first search
+`IsCyclic`        | Detects cycles in a graph
 `TopologicalSort` | Flattens a graph using topological sort
 
 ## Nodes definition
@@ -33,7 +34,7 @@ See tests for a matrix or a custom graph application.
 path := astar.Run[node](
   start,                                    // start node
   goal,                                     // goal node
-  weight func(node) float64 { .. },         // the weight of the node in parameter
+  weight func(node) float64 { .. },         // the weight of the node in parameter (can be nil)
   distance func(node, node) float64 { .. }, // the heuristic distance between the 2 given nodes
   neighbors func(node) []node { .. },       // list of neighbors of the node in parameter
 )
@@ -43,6 +44,20 @@ Helper functions for heuristic distance:
 
 * `astar.ManhattanDistance`
 * `astar.EuclideanDistance`
+
+## Dijkstra
+
+Generic `Dijkstra` algorithm.
+
+```golang
+// Get an order list of nodes that represents the shortest path
+path := dijkstra.Run[node](
+  start,                                        // start node
+  goal,                                         // goal node
+  weight func(node) float64 { .. },             // the weight of the node in parameter (can be nil)
+  neighbors func(node) map[node]float64 { .. }, // list of neighbors & distance of the node in parameter
+)
+```
 
 ## BFS (Breadth-first search)
 
