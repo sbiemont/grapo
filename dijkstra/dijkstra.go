@@ -2,7 +2,6 @@ package dijkstra
 
 import (
 	"container/heap"
-	"slices"
 )
 
 // Inspired from https://dev.to/douglasmakey/implementation-of-dijkstra-using-heap-in-go-6e3
@@ -41,7 +40,7 @@ func Run[T comparable](start, goal T, weight func(T) float64, neighbors func(T) 
 					w = weight(n)
 				}
 				heap.Push(wqueue, path[T]{ // new path with an increased weight and a new node
-					nodes:  slices.Clone(append(p.nodes, n)),
+					nodes:  append(p.nodes, n),
 					weight: p.weight + w + dist,
 				})
 			}

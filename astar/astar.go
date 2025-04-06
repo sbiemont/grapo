@@ -80,6 +80,9 @@ func Run[T comparable](start, goal T, weight func(T) float64, distance func(T, T
 	startNode.h = distance(start, goal)     // Estimate to goal
 	startNode.f = startNode.g + startNode.h // Total estimated cost
 	startNode.parent = nil                  // For path reconstruction
+
+	goalNode := c.fetch(goal)
+	
 	for len(openedList) > 0 {
 		// The queue is empty: path found
 		if queue.Len() == 0 {
@@ -91,7 +94,7 @@ func Run[T comparable](start, goal T, weight func(T) float64, distance func(T, T
 		current := c.cache2[currentNode]
 
 		// Check if we've reached the goal
-		if currentNode == c.fetch(goal) {
+		if currentNode == goalNode {
 			return path(c.cache2, startNode, currentNode)
 		}
 		// Move current node from opened to closed list
