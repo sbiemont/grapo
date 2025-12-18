@@ -26,10 +26,11 @@ func TestBFS(t *testing.T) {
 				c: {g, h},
 			}
 			var res []node
-			directed.BFS(edges, a, func(n node) error {
+			err := directed.BFS(edges, a, func(n node) error {
 				res = append(res, n)
 				return nil
 			})
+			So(err, ShouldBeNil)
 			So(res, ShouldResemble, []node{a, b, c, d, e, f, g, h})
 		})
 
@@ -41,11 +42,15 @@ func TestBFS(t *testing.T) {
 				c: {b},
 			}
 			var res []node
-			directed.BFS(edges, a, func(n node) error {
+			err := directed.BFS(edges, a, func(n node) error {
 				res = append(res, n)
 				return nil
 			})
+			So(err, ShouldBeNil)
 			So(res, ShouldResemble, []node{a, b, c})
+		})
+
+		Convey("when error", func() {
 		})
 	})
 }

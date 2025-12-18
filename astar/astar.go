@@ -23,38 +23,36 @@ func EuclideanDistance(x1, y1, x2, y2 float64) float64 {
 }
 
 // node is an internal struct to store data
-type node struct {
-	f      float64 // total estimated cost (f=g+h)
-	g      float64 // cost from current node
-	h      float64 // heuristic (estimated) distance from node to goal
-	index  int     // for priority queue
-	parent *node   // parent computed during A* search
+type node[T comparable] struct {
+	value  T        // actual value of the node
+	f      float64  // total estimated cost (f=g+h)
+	g      float64  // cost from current node
+	h      float64  // heuristic (estimated) distance from node to goal
+	index  int      // for priority queue
+	parent *node[T] // parent computed during A* search
 }
 
 // converter is a map to store nodes and their corresponding values
 // it uses two maps to allow bidirectional lookup
 type converter[T comparable] struct {
-	cache1 map[T]*node
-	cache2 map[*node]T
+	cache map[T]*node[T]
 }
 
 // newConverter creates a new empty cache for the given type
 func newConverter[T comparable]() *converter[T] {
 	return &converter[T]{
-		cache1: make(map[T]*node),
-		cache2: make(map[*node]T),
+		cache: make(map[T]*node[T]),
 	}
 }
 
 // fetch retrieves the node from the cache or creates a new one if it doesn't exist
-func (c converter[T]) fetch(n T) *node {
-	m, ok := c.cache1[n]
+func (c converter[T]) fetch(n T) *node[T] {
+	m, ok := c.cache[n]
 	if ok {
 		return m
 	}
-	m = &node{}
-	c.cache1[n] = m
-	c.cache2[m] = n
+	m = &node[T]{value: n}
+	c.cache[n] = m
 	return m
 }
 
@@ -69,9 +67,9 @@ func Run[T comparable](start, goal T, weight func(T) float64, distance func(T, T
 	// Initialize opened and closed lists
 	c := newConverter[T]()
 	startNode := c.fetch(start)
-	openedList := map[*node]struct{}{startNode: {}}
-	closedList := map[*node]struct{}{}
-	queue := &priorityQueue{}
+	openedList := map[*node[T]]struct{}{startNode: {}}
+	closedList := map[*node[T]]struct{}{}
+	queue := &priorityQueue[T]{}
 	heap.Init(queue)
 	heap.Push(queue, startNode)
 
@@ -82,7 +80,7 @@ func Run[T comparable](start, goal T, weight func(T) float64, distance func(T, T
 	startNode.parent = nil                  // For path reconstruction
 
 	goalNode := c.fetch(goal)
-	
+
 	for len(openedList) > 0 {
 		// The queue is empty: path found
 		if queue.Len() == 0 {
@@ -90,12 +88,12 @@ func Run[T comparable](start, goal T, weight func(T) float64, distance func(T, T
 		}
 
 		// Get node with lowest f value (from prority queue)
-		currentNode := heap.Pop(queue).(*node)
-		current := c.cache2[currentNode]
+		currentNode := heap.Pop(queue).(*node[T])
+		current := currentNode.value
 
 		// Check if we've reached the goal
 		if currentNode == goalNode {
-			return path(c.cache2, startNode, currentNode)
+			return path(startNode, currentNode)
 		}
 		// Move current node from opened to closed list
 		delete(openedList, currentNode)
@@ -135,9 +133,9 @@ func Run[T comparable](start, goal T, weight func(T) float64, distance func(T, T
 }
 
 // path from start to current node
-func path[T comparable](cache map[*node]T, start, current *node) []T {
+func path[T comparable](start, current *node[T]) []T {
 	// run from current to start node using parents and inverse the path
-	var path []*node
+	var path []*node[T]
 	for current != start {
 		path = append(path, current)
 		current = current.parent
@@ -148,7 +146,7 @@ func path[T comparable](cache map[*node]T, start, current *node) []T {
 	// convert using cache
 	nodes := make([]T, len(path))
 	for i, p := range path {
-		nodes[i] = cache[p]
+		nodes[i] = p.value
 	}
 	return nodes
 }

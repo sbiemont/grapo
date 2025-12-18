@@ -1,6 +1,7 @@
 package directed
 
-func BFS[T comparable](edges map[T][]T, first T, process func(T) error) {
+// BFS performs a breadth-first search on a directed graph represented as an adjacency list
+func BFS[T comparable](edges map[T][]T, first T, process func(T) error) error {
 	// Start with the first node
 	queue := []T{first}
 	visited := make(map[T]bool)
@@ -16,7 +17,7 @@ func BFS[T comparable](edges map[T][]T, first T, process func(T) error) {
 		visited[node] = true
 		err := process(node)
 		if err != nil {
-			return
+			return err
 		}
 
 		// Process the neighbors
@@ -26,4 +27,5 @@ func BFS[T comparable](edges map[T][]T, first T, process func(T) error) {
 			}
 		}
 	}
+	return nil
 }
